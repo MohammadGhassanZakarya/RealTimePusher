@@ -1,6 +1,59 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+
+
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+  <script>
+
+    // Enable pusher logging - don't include this in production
+    Pusher.logToConsole = true;
+
+    var pusher = new Pusher('f3bb54a7c6c1fb11d87c', {
+      cluster: 'mt1'
+    });
+
+    // var channel = pusher.subscribe('new-notification');
+    // channel.bind('NewNotification', function(data) {
+    //   alert(JSON.stringify(data));
+    // });
+  </script>
+  {{-- <script src="{{asset('js/pusherNotifications.js')}}"></script> --}}
+
+  <script
+			  src="https://code.jquery.com/jquery-3.6.1.min.js"
+			  integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+			  crossorigin="anonymous"></script>
+         
+    {{-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous">
+    </script>
+   
+
+    {{-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://js.pusher.com/6.0/pusher.min.js"></script>
+
+
+    <script>
+    $.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+    });
+
+    // Enable pusher logging - don't include this in production
+    Pusher.logToConsole = true;
+    var pusher = new Pusher('f3bb54a7c6c1fb11d87c', {
+    //cluster: 'mt1',
+    encrypted: false
+    });
+
+    </script>
+
+    <script src="{{asset('js/pusherNotifications.js')}}"></script> --}}
+
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -47,12 +100,13 @@
                     <!-- Authentication Links -->
 
                     @auth
-                        <li class="dropdown dropdown-notification nav-item  dropdown-notifications">
-                            <a class="nav-link nav-link-label" href="#" data-toggle="dropdown">
+                        <li class="dropdown dropdown-notification nav-item  dropdown-notifications" id="dropdown-notifications">
+                            <a class="nav-link nav-link-label data-toggle" href="#" data-toggle="dropdown">
                                 <i class="fa fa-bell"> </i>
                                 <span
-                                    class="badge badge-pill badge-default badge-danger badge-default badge-up badge-glow   notif-count"
-                                    data-count="9">9</span>
+                                    class="data-count badge badge-pill badge-default badge-danger badge-default badge-up badge-glow   notif-count"
+                                    data-count="9">9
+                                </span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-media dropdown-menu-right">
                                 <li class="dropdown-menu-header">
@@ -76,7 +130,6 @@
                                             </div>
                                         </div>
                                     </a>
-
                                 </li>
                                 <li class="dropdown-menu-footer"><a class="dropdown-item text-muted text-center"
                                                                     href=""> جميع الاشعارات </a>
@@ -126,27 +179,68 @@
     </main>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"
-        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-<script src="https://js.pusher.com/6.0/pusher.min.js"></script>
-
-
-<script>
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-    // Enable pusher logging - don't include this in production
-    Pusher.logToConsole = true;
-    var pusher = new Pusher('f3bb54a7c6c1fb11d87c', {
-        //cluster: 'mt1',
-        encrypted: false
-    });
-</script>
-
-<script src="{{asset('js/pusherNotifications.js')}}"></script>
-
 @yield('scripts')
+
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//js.pusher.com/3.1/pusher.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+      var notificationsWrapper   = $('.dropdown-notifications');
+      var notificationsToggle    = notificationsWrapper.find('a[data-toggle]');
+      var notificationsCountElem = notificationsToggle.find('i[data-count]');
+      var notificationsCount     = parseInt(notificationsCountElem.data('count'));
+      var notifications          = notificationsWrapper.find('ul.dropdown-menu');
+
+      if (notificationsCount <= 0) {
+        notificationsWrapper.hide();
+      }
+
+      // Enable pusher logging - don't include this in production
+      // Pusher.logToConsole = true;
+
+      
+
+      // Subscribe to the channel we specified in our Laravel Event
+      var channel = pusher.subscribe('new-notification');
+
+      // Bind a function to a Event (the full Laravel class)
+      channel.bind('App\\Events\\StatusLiked', function(data) {
+        var existingNotifications = notifications.html();
+        var avatar = Math.floor(Math.random() * (71 - 20 + 1)) + 20;
+        var newNotificationHtml = `
+          <li class="notification active">
+              <div class="media">
+                <div class="media-left">
+                  <div class="media-object">
+                    <img src="https://api.adorable.io/avatars/71/`+avatar+`.png" class="img-circle" alt="50x50" style="width: 50px; height: 50px;">
+                  </div>
+                </div>
+                <div class="media-body">
+                  <strong class="notification-title">`+data.message+`</strong>
+                  <!--p class="notification-desc">Extra description can go here</p-->
+                  <div class="notification-meta">
+                    <small class="timestamp">about a minute ago</small>
+                  </div>
+                </div>
+              </div>
+          </li>
+        `;
+        notifications.html(newNotificationHtml + existingNotifications);
+
+        notificationsCount += 1;
+        notificationsCountElem.attr('data-count', notificationsCount);
+        notificationsWrapper.find('.notif-count').text(notificationsCount);
+        notificationsWrapper.show();
+      });
+    </script>
+
+
+
+
+
 </body>
 </html>

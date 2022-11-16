@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use Carbon\Carbon;
@@ -13,12 +12,6 @@ class NewNotification implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * Create a new event instance.
-     *
-     * @return void
-     */
-
     public $user_id;
     public $comment;
     public $user_name;
@@ -26,7 +19,7 @@ class NewNotification implements ShouldBroadcast
     public $data;
     public $time;
 
-    public function __construct($data = [])
+    public function __construct($data)
     {
         $this->user_id = $data['user_id'];
         $this->user_name = $data['user_name'];
@@ -37,11 +30,6 @@ class NewNotification implements ShouldBroadcast
 
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
     public function broadcastOn()
     {
         //return new channel('new-notification')
